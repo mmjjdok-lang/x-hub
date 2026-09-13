@@ -1,4 +1,29 @@
-local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
+local windUiSourceUrl = "https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"
+local windUiSource
+
+local sourceOk, sourceResult = pcall(function()
+    return game:HttpGet(windUiSourceUrl)
+end)
+
+if not sourceOk or type(sourceResult) ~= "string" or sourceResult == "" then
+    warn("Eclipse X: تعذر تحميل WindUI: " .. tostring(sourceResult))
+    return
+end
+
+local compileOk, compiledWindUI = pcall(loadstring, sourceResult)
+if not compileOk or type(compiledWindUI) ~= "function" then
+    warn("Eclipse X: تعذر ترجمة WindUI: " .. tostring(compiledWindUI))
+    return
+end
+
+local runOk, WindUIResult = pcall(compiledWindUI)
+if not runOk or type(WindUIResult) ~= "table" then
+    warn("Eclipse X: تعذر تشغيل WindUI: " .. tostring(WindUIResult))
+    return
+end
+
+windUiSource = sourceResult
+local WindUI = WindUIResult
 
 -- إنشاء النافذة مع إعدادات زر الـ Open المخصصة
 local Window = WindUI:CreateWindow({
@@ -672,9 +697,11 @@ local function ExecuteFlingSheriff()
     end
 
     if getgenv and getgenv().antiFling then
-        if fu and fu.notification then
-            fu.notification("Turn off anti-fling to use fling.")
-        end
+        WindUI:Notify({
+            Title = "Eclipse X",
+            Content = "Turn off anti-fling to use fling.",
+            Duration = 3
+        })
         return
     end
 
@@ -843,9 +870,11 @@ local function ExecuteFlingSheriff()
             elseif not TRootPart and not THead and Accessory and Handle then
                 SFBasePart(Handle)
             else
-                if fu and fu.notification then
-                    fu.notification("Can't find a proper part of target player to fling.")
-                end
+                WindUI:Notify({
+                    Title = "Eclipse X",
+                    Content = "Can't find a proper part of target player to fling.",
+                    Duration = 3
+                })
             end
 
             BV:Destroy()
@@ -870,9 +899,11 @@ local function ExecuteFlingSheriff()
                 workspace.FallenPartsDestroyHeight = getgenv().FPDH
             end
         else
-            if fu and fu.notification then
-                fu.notification("No valid character of said target player. May have died.")
-            end
+            WindUI:Notify({
+                Title = "Eclipse X",
+                Content = "No valid character of said target player. May have died.",
+                Duration = 3
+            })
         end
     end
 
@@ -1560,9 +1591,11 @@ local function ExecuteFlingSheriff()
     end
 
     if getgenv and getgenv().antiFling then
-        if fu and fu.notification then
-            fu.notification("Turn off anti-fling to use fling.")
-        end
+        WindUI:Notify({
+            Title = "Eclipse X",
+            Content = "Turn off anti-fling to use fling.",
+            Duration = 3
+        })
         return
     end
 
@@ -1731,9 +1764,11 @@ local function ExecuteFlingSheriff()
             elseif not TRootPart and not THead and Accessory and Handle then
                 SFBasePart(Handle)
             else
-                if fu and fu.notification then
-                    fu.notification("Can't find a proper part of target player to fling.")
-                end
+                WindUI:Notify({
+                    Title = "Eclipse X",
+                    Content = "Can't find a proper part of target player to fling.",
+                    Duration = 3
+                })
             end
 
             BV:Destroy()
@@ -1758,9 +1793,11 @@ local function ExecuteFlingSheriff()
                 workspace.FallenPartsDestroyHeight = getgenv().FPDH
             end
         else
-            if fu and fu.notification then
-                fu.notification("No valid character of said target player. May have died.")
-            end
+            WindUI:Notify({
+                Title = "Eclipse X",
+                Content = "No valid character of said target player. May have died.",
+                Duration = 3
+            })
         end
     end
 
