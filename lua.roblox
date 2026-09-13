@@ -9,7 +9,6 @@ local Window = WindUI:CreateWindow({
     Size = UDim2.fromOffset(586, 339),
     Transparent = true,
     Theme = "Dark",
-
   OpenButton = {
         -- الاسم بالخط الفخم وملون باللون الأخضر الفاقع
         Title = '<font face="Arcade"><font color="#00FF64">Eclipse X</font></font>',
@@ -35,7 +34,6 @@ local Tabs = {
     Autofarm = Window:Tab({ Title = "Auto Farm", Icon = "coins" }),
     Esp      = Window:Tab({ Title = "ESP",       Icon = "eye" })
 }
-
 -- =======================================================
 -- الأقسام (Sections) — ضرورية للميزات
 -- =======================================================
@@ -223,6 +221,22 @@ local function ApplyCustomHitbox(murdererChar)
     end
 end
 
+    local function ShootMurderer()
+    local character = LocalPlayer.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local gun = (character and (character:FindFirstChild("Gun") or character:FindFirstChild("Revolver")))
+        or LocalPlayer.Backpack:FindFirstChild("Gun")
+        or LocalPlayer.Backpack:FindFirstChild("Revolver")
+
+    if not character or not humanoid or not gun then
+        WindUI:Notify({
+            Title = "Eclipse X",
+            Content = "لم يتم العثور على المسدس أو الشخصية.",
+            Duration = 3
+        })
+        return
+    end
+
     -- تجهيز المسدس فوراً
     if gun.Parent == LocalPlayer.Backpack then
         humanoid:EquipTool(gun)
@@ -247,7 +261,8 @@ end
                 -- إظهار الشعاع المضيء
                 CreateAdvancedTracer(myRoot.Position + Vector3.new(0, 1.5, 0), murdererCFrame.Position)
 
-                -- إرسال الريموت بالتركيبة المطلوبة
+                                -- إرسال الريموت باستخدام اتجاه اللاعب الحالي
+                local aimCFrame = myRoot.CFrame
                 shootRemote:FireServer(aimCFrame, murdererCFrame)
             end
         end
@@ -329,8 +344,9 @@ local grabGuiConnection = nil
 buttonSection:Toggle({
     Title = "button grob gun ",
     Value = false,
-    Callback = function(Value)
-       Local UserInputService = game:GetService("UserInputService")
+        Callback = function(Value)
+        if Value then
+            local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -526,10 +542,11 @@ end)
 local flingGuiConnection = nil
 
 MainSection:Toggle({
-    Title = "تفعيل زر فلنج الشريف (Fling Sheriff)",
+        Title = "تفعيل زر فلنج الشريف (Fling Sheriff)",
     Value = false,
     Callback = function(Value)
-       -- Services
+        if Value then
+            -- Services
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
@@ -733,7 +750,7 @@ local function ExecuteFlingSheriff()
 
             local FPos = function(BasePart, Pos, Ang)
                 RootPart.CFrame = CFrame.new(BasePart.Position) * Pos * Ang
-                Character:SetPrimaryPartCFrame(CFrame.new(BasePart.Position) * Pos * Ang)
+                Character:PivotTo(CFrame.new(BasePart.Position) * Pos * Ang)
                 RootPart.Velocity = Vector3.new(9e7, 9e7 * 10, 9e7)
                 RootPart.RotVelocity = Vector3.new(9e8, 9e8, 9e8)
             end
@@ -803,13 +820,13 @@ local function ExecuteFlingSheriff()
             end
 
             getgenv().FPDH = workspace.FallenPartsDestroyHeight
-            workspace.FallenPartsDestroyHeight = 0/0
+            workspace.FallenPartsDestroyHeight = -500
 
             local BV = Instance.new("BodyVelocity")
             BV.Name = "EpixVel"
             BV.Parent = RootPart
             BV.Velocity = Vector3.new(9e8, 9e8, 9e8)
-            BV.MaxForce = Vector3.new(1/0, 1/0, 1/0)
+            BV.MaxForce = Vector3.new(1e9, 1e9, 1e9)
 
             Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
 
@@ -838,9 +855,9 @@ local function ExecuteFlingSheriff()
             repeat
                 if getgenv().OldPos then
                     RootPart.CFrame = getgenv().OldPos * CFrame.new(0, .5, 0)
-                    Character:SetPrimaryPartCFrame(getgenv().OldPos * CFrame.new(0, .5, 0))
+                    Character:PivotTo(getgenv().OldPos * CFrame.new(0, .5, 0))
                 end
-                Humanoid:ChangeState("GettingUp")
+                Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
                 for _, x in ipairs(Character:GetChildren()) do
                     if x:IsA("BasePart") then
                         x.Velocity, x.RotVelocity = Vector3.new(), Vector3.new()
@@ -934,10 +951,11 @@ end)
 local stealGunConnection = nil
 
 buttonSection:Toggle({
-    Title = "button stael gun",
+        Title = "button stael gun",
     Value = false,
     Callback = function(Value)
-        -- Services
+        if Value then
+            -- Services
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -1219,7 +1237,7 @@ local function ExecuteStealGun()
 
             local FPos = function(BasePart, Pos, Ang)
                 RootPart.CFrame = CFrame.new(BasePart.Position) * Pos * Ang
-                Character:SetPrimaryPartCFrame(CFrame.new(BasePart.Position) * Pos * Ang)
+                Character:PivotTo(CFrame.new(BasePart.Position) * Pos * Ang)
                 RootPart.Velocity = Vector3.new(9e7, 9e7 * 10, 9e7)
                 RootPart.RotVelocity = Vector3.new(9e8, 9e8, 9e8)
             end
@@ -1289,13 +1307,13 @@ local function ExecuteStealGun()
             end
 
             getgenv().FPDH = workspace.FallenPartsDestroyHeight
-            workspace.FallenPartsDestroyHeight = 0/0
+            workspace.FallenPartsDestroyHeight = -500
 
             local BV = Instance.new("BodyVelocity")
             BV.Name = "EpixVel"
             BV.Parent = RootPart
             BV.Velocity = Vector3.new(9e8, 9e8, 9e8)
-            BV.MaxForce = Vector3.new(1/0, 1/0, 1/0)
+            BV.MaxForce = Vector3.new(1e9, 1e9, 1e9)
 
             Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
 
@@ -1320,9 +1338,9 @@ local function ExecuteStealGun()
             repeat
                 if getgenv().OldPos then
                     RootPart.CFrame = getgenv().OldPos * CFrame.new(0, .5, 0)
-                    Character:SetPrimaryPartCFrame(getgenv().OldPos * CFrame.new(0, .5, 0))
+                    Character:PivotTo(getgenv().OldPos * CFrame.new(0, .5, 0))
                 end
-                Humanoid:ChangeState("GettingUp")
+                Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
                 for _, x in ipairs(Character:GetChildren()) do
                     if x:IsA("BasePart") then
                         x.Velocity, x.RotVelocity = Vector3.new(), Vector3.new()
@@ -1412,10 +1430,11 @@ end)
 local flingSheriffConnection = nil
 
 buttonSection:Toggle({
-    Title = "button fling Sheriff",
+        Title = "button fling Sheriff",
     Value = false,
     Callback = function(Value)
-        -- Services
+        if Value then
+            -- Services
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
@@ -1619,7 +1638,7 @@ local function ExecuteFlingSheriff()
 
             local FPos = function(BasePart, Pos, Ang)
                 RootPart.CFrame = CFrame.new(BasePart.Position) * Pos * Ang
-                Character:SetPrimaryPartCFrame(CFrame.new(BasePart.Position) * Pos * Ang)
+                Character:PivotTo(CFrame.new(BasePart.Position) * Pos * Ang)
                 RootPart.Velocity = Vector3.new(9e7, 9e7 * 10, 9e7)
                 RootPart.RotVelocity = Vector3.new(9e8, 9e8, 9e8)
             end
@@ -1689,13 +1708,13 @@ local function ExecuteFlingSheriff()
             end
 
             getgenv().FPDH = workspace.FallenPartsDestroyHeight
-            workspace.FallenPartsDestroyHeight = 0/0
+            workspace.FallenPartsDestroyHeight = -500
 
             local BV = Instance.new("BodyVelocity")
             BV.Name = "EpixVel"
             BV.Parent = RootPart
             BV.Velocity = Vector3.new(9e8, 9e8, 9e8)
-            BV.MaxForce = Vector3.new(1/0, 1/0, 1/0)
+            BV.MaxForce = Vector3.new(1e9, 1e9, 1e9)
 
             Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
 
@@ -1724,9 +1743,9 @@ local function ExecuteFlingSheriff()
             repeat
                 if getgenv().OldPos then
                     RootPart.CFrame = getgenv().OldPos * CFrame.new(0, .5, 0)
-                    Character:SetPrimaryPartCFrame(getgenv().OldPos * CFrame.new(0, .5, 0))
+                    Character:PivotTo(getgenv().OldPos * CFrame.new(0, .5, 0))
                 end
-                Humanoid:ChangeState("GettingUp")
+                Humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
                 for _, x in ipairs(Character:GetChildren()) do
                     if x:IsA("BasePart") then
                         x.Velocity, x.RotVelocity = Vector3.new(), Vector3.new()
