@@ -25,13 +25,24 @@ local Window = WindUI:CreateWindow({
     }
 })
 
--- إضافة التبويبات
+-- =======================================================
+-- التبويبات (Tabs)
+-- =======================================================
 local Tabs = {
-    Main = Window:Tab({ Title = "mein", Icon = "home" }),
-    Settings = Window:Tab({ Title = "settings", Icon = "settings" })
-  button = Window:Tab({ Title = "button", Icon = "toggle-right" }),
-   autofarm = Window:Tab({ Title = "auto farm", Icon = "coins" }),
-   esp = Window:Tab({ Title = "ESP", Icon = "eye" }),
+    Main     = Window:Tab({ Title = "Main",      Icon = "home" }),
+    Settings = Window:Tab({ Title = "Settings",  Icon = "settings" }),
+    Button   = Window:Tab({ Title = "Button",    Icon = "toggle-right" }),
+    Autofarm = Window:Tab({ Title = "Auto Farm", Icon = "coins" }),
+    Esp      = Window:Tab({ Title = "ESP",       Icon = "eye" })
+}
+
+-- =======================================================
+-- الأقسام (Sections) — ضرورية للميزات
+-- =======================================================
+local buttonSection   = Tabs.Button:Section({ Title = "Button Features" })
+local MainSection     = Tabs.Main:Section({ Title = "Main Features" })
+local espSection      = Tabs.Esp:Section({ Title = "ESP Features" })
+local autofarmSection = Tabs.Autofarm:Section({ Title = "Auto Farm Features" })
 --اضافه ازرار 
 buttonSection:Toggle({
     Title = "shoot button ",
@@ -41,7 +52,7 @@ buttonSection:Toggle({
             -- [ عند تفعيل الزر: يتم إنشاء وتشغيل السكربت والواجهة ]
             print("تم تشغيل الميزة")
             
-            Local UserInputService = game:GetService("UserInputService")
+            local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
