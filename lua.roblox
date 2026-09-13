@@ -1,0 +1,2680 @@
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
+
+-- إنشاء النافذة مع إعدادات زر الـ Open المخصصة
+local Window = WindUI:CreateWindow({
+    Title = "سكربت MM2 - Eclipse X",
+    Icon = "rbxassetid://115334728975828",
+    Author = "نايف",
+    Folder = "MM2Script",
+    Size = UDim2.fromOffset(586, 339),
+    Transparent = true,
+    Theme = "Dark",
+
+  OpenButton = {
+        -- الاسم بالخط الفخم وملون باللون الأخضر الفاقع
+        Title = '<font face="Arcade"><font color="#00FF64">Eclipse X</font></font>',
+        Icon = "menu",
+        Enabled = true,
+        CornerRadius = UDim.new(0, 12), -- حواف مربعة بنعومة متوسطة
+        StrokeThickness = 2.5,
+        -- الخلفية والجوف متدرجة باللون البنفسجي الفخم
+        Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 20, 200)),   -- بنفسجي غامق
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(170, 70, 255))    -- بنفسجي فاتح
+        })
+    }
+})
+
+-- إضافة التبويبات
+local Tabs = {
+    Main = Window:Tab({ Title = "mein", Icon = "home" }),
+    Settings = Window:Tab({ Title = "settings", Icon = "settings" })
+  button = Window:Tab({ Title = "button", Icon = "toggle-right" }),
+   autofarm = Window:Tab({ Title = "auto farm", Icon = "coins" }),
+   esp = Window:Tab({ Title = "ESP", Icon = "eye" }),
+--اضافه ازرار 
+buttonSection:Toggle({
+    Title = "shoot button ",
+    Value = false,
+    Callback = function(Value)
+        if Value then
+            -- [ عند تفعيل الزر: يتم إنشاء وتشغيل السكربت والواجهة ]
+            print("تم تشغيل الميزة")
+            
+            Local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local Stats = game:GetService("Stats")
+local LocalPlayer = Players.LocalPlayer
+
+local playerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+if playerGui:FindFirstChild("ShootMurdererGui") then
+    playerGui.ShootMurdererGui:Destroy()
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ShootMurdererGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- الزر بحجم (160x65)
+local button = Instance.new("TextButton")
+button.Name = "ShootMurdererBtn"
+button.Size = UDim2.new(0, 160, 0, 65)
+button.Position = UDim2.new(0.5, -80, 0.5, -32)
+button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+button.BackgroundTransparency = 0.85
+button.Text = "shoot murdrer"
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.TextSize = 16
+button.Font = Enum.Font.Jura
+button.ClipsDescendants = true
+button.AutoButtonColor = false
+button.Parent = screenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 6)
+uiCorner.Parent = button
+
+-- الحاجز باللون الأخضر الأساسي
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Thickness = 3.5
+uiStroke.Color = Color3.fromRGB(0, 255, 127)
+uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+uiStroke.Parent = button
+
+-- التدرج البنفسجي داخل الحاجز الأخضر
+local uiGradient = Instance.new("UIGradient")
+uiGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 127)),
+    ColorSequenceKeypoint.new(0.3, Color3.fromRGB(170, 0, 255)),
+    ColorSequenceKeypoint.new(0.7, Color3.fromRGB(220, 80, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 127))
+})
+uiGradient.Rotation = 0
+uiGradient.Parent = uiStroke
+
+-- تحريك التدرج البنفسجي
+task.spawn(function()
+    while button and button.Parent do
+        local tween = TweenService:Create(uiGradient, TweenInfo.new(7, Enum.EasingStyle.Linear), {Rotation = uiGradient.Rotation + 360})
+        tween:Play()
+        tween.Completed:Wait()
+        if uiGradient.Rotation >= 360 then uiGradient.Rotation = 0 end
+    end
+end)
+
+-- الصوت عند النقر
+local clickSound = Instance.new("Sound")
+clickSound.SoundId = "rbxassetid://12221967"
+clickSound.Volume = 1.5
+clickSound.Parent = screenGui
+
+-- تأثير قطرة الماء
+local function CreateRipple(clickPosition)
+    local btnAbsPos = button.AbsolutePosition
+    local relativeX = clickPosition.X - btnAbsPos.X
+    local relativeY = clickPosition.Y - btnAbsPos.Y
+
+    local circle = Instance.new("Frame")
+    circle.AnchorPoint = Vector2.new(0.5, 0.5)
+    circle.Position = UDim2.new(0, relativeX, 0, relativeY)
+    circle.Size = UDim2.new(0, 0, 0, 0)
+    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    circle.BackgroundTransparency = 0.4
+    circle.ZIndex = button.ZIndex + 2
+
+    local circleCorner = Instance.new("UICorner")
+    circleCorner.CornerRadius = UDim.new(1, 0)
+    circleCorner.Parent = circle
+    circle.Parent = button
+
+    local tweenInfo = TweenInfo.new(0.65, Enum.EasingStyle.OutQuart, Enum.EasingDirection.Out)
+    local tween = TweenService:Create(circle, tweenInfo, {
+        Size = UDim2.new(0, 220, 0, 220),
+        BackgroundTransparency = 1
+    })
+    
+    tween:Play()
+    tween.Completed:Connect(function()
+        circle:Destroy()
+    end)
+end
+
+-- رسم شعاع الطلقة المضيء
+local function CreateAdvancedTracer(startPos, targetPos)
+    local p1 = Instance.new("Part")
+    p1.Size = Vector3.new(0.05, 0.05, 0.05)
+    p1.Transparency = 1
+    p1.CanCollide = false
+    p1.Anchored = true
+    p1.Position = startPos
+    p1.Parent = Workspace
+
+    local p2 = Instance.new("Part")
+    p2.Size = Vector3.new(0.05, 0.05, 0.05)
+    p2.Transparency = 1
+    p2.CanCollide = false
+    p2.Anchored = true
+    p2.Position = targetPos
+    p2.Parent = Workspace
+
+    local a1 = Instance.new("Attachment", p1)
+    local a2 = Instance.new("Attachment", p2)
+
+    local beam = Instance.new("Beam")
+    beam.Attachment0 = a1
+    beam.Attachment1 = a2
+    beam.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255))
+    beam.LightEmission = 1
+    beam.LightInfluence = 0
+    beam.Width0 = 0.4
+    beam.Width1 = 0.4
+    beam.FaceCamera = true
+    beam.Parent = p1
+
+    local tween = TweenService:Create(beam, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Width0 = 0,
+        Width1 = 0
+    })
+    tween:Play()
+
+    task.delay(0.15, function()
+        p1:Destroy()
+        p2:Destroy()
+    end)
+end
+
+-- البحث عن القاتل
+local function GetMurderer()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local char = player.Character
+            local hasKnife = char:FindFirstChild("Knife") or (player:FindFirstChild("Backpack") and player.Backpack:FindFirstChild("Knife"))
+            if hasKnife then
+                return char
+            end
+        end
+    end
+    return nil
+end
+
+-- تطبيق الهيتبوكس المخفي على القاتل
+local function ApplyCustomHitbox(murdererChar)
+    local heartPart = murdererChar:FindFirstChild("UpperTorso") or murdererChar:FindFirstChild("HumanoidRootPart")
+    if heartPart then
+        heartPart.Size = Vector3.new(5, 5, 5)
+        heartPart.Transparency = 1
+        heartPart.CanCollide = false
+    end
+end
+
+    -- تجهيز المسدس فوراً
+    if gun.Parent == LocalPlayer.Backpack then
+        humanoid:EquipTool(gun)
+    end
+
+    -- الانتظار 0.1 ثانية
+    task.wait(0.1)
+
+    local murdererChar = GetMurderer()
+    if murdererChar then
+        ApplyCustomHitbox(murdererChar)
+
+        local heartPart = murdererChar:FindFirstChild("UpperTorso") or murdererChar:FindFirstChild("HumanoidRootPart")
+        local myRoot = character:FindFirstChild("HumanoidRootPart")
+
+        if heartPart and myRoot then
+            local shootRemote = gun:FindFirstChild("Shoot")
+            if shootRemote and shootRemote:IsA("RemoteEvent") then
+                local murdererCFrame = heartPart.CFrame
+                
+               
+                -- إظهار الشعاع المضيء
+                CreateAdvancedTracer(myRoot.Position + Vector3.new(0, 1.5, 0), murdererCFrame.Position)
+
+                -- إرسال الريموت بالتركيبة المطلوبة
+                shootRemote:FireServer(aimCFrame, murdererCFrame)
+            end
+        end
+    end
+
+    -- إرجاع المسدس فوراً للحقيبة
+    humanoid:UnequipTools()
+end
+WindUI:Notify({
+            Title = " Eclipse X",
+            Content = "The Murder was launched successfully.!",
+            Duration = 3
+        })
+    end
+})
+-- =======================================================
+-- إدارة الضغط والسحب
+-- =======================================================
+local dragging = false
+local activeInput = nil
+local dragStart = nil
+local startPos = nil
+local hasDraggedFar = false
+
+button.InputBegan:Connect(function(input)
+    if (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1) and not dragging then
+        dragging = true
+        activeInput = input
+        dragStart = input.Position
+        startPos = button.Position
+        hasDraggedFar = false
+
+        clickSound:Play()
+
+        TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 146, 0, 56)
+        }):Play()
+
+        CreateRipple(input.Position)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input == activeInput then
+        local delta = input.Position - dragStart
+        if delta.Magnitude > 8 then
+            hasDraggedFar = true
+        end
+        
+        local targetPos = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+        
+        TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+            Position = targetPos
+        }):Play()
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input == activeInput and dragging then
+        dragging = false
+        activeInput = nil
+
+        TweenService:Create(button, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 160, 0, 65)
+        }):Play()
+
+        if not hasDraggedFar then
+            task.spawn(ShootMurderer)
+        end
+    end
+end)
+
+-- متغيرات عامة لحفظ حالة الواجهة والحلقة
+local grabGuiConnection = nil
+
+buttonSection:Toggle({
+    Title = "button grob gun ",
+    Value = false,
+    Callback = function(Value)
+       Local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local playerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- حذف الواجهة القديمة إن وجدت
+if playerGui:FindFirstChild("GrabGunGui") then
+    playerGui.GrabGunGui:Destroy()
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "GrabGunGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- الزر بحجم أصغر (45x45) في أعلى اليسار
+local button = Instance.new("TextButton")
+button.Name = "GrabGunBtn"
+button.Size = UDim2.new(0, 45, 0, 45)
+button.Position = UDim2.new(0, 20, 0, 20) -- أعلى اليسار
+button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+button.BackgroundTransparency = 0.85
+button.Text = "grob gun"
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.TextSize = 9
+button.Font = Enum.Font.Jura
+button.TextWrapped = true
+button.ClipsDescendants = true
+button.AutoButtonColor = false
+button.Parent = screenGui
+
+-- إعطاء الزر الشكل الدائري
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(1, 0)
+uiCorner.Parent = button
+
+-- الحاجز الأخضر
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Thickness = 2.5
+uiStroke.Color = Color3.fromRGB(0, 255, 127)
+uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+uiStroke.Parent = button
+
+-- التدرج البنفسجي داخل الحاجز
+local uiGradient = Instance.new("UIGradient")
+uiGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 127)),
+    ColorSequenceKeypoint.new(0.3, Color3.fromRGB(170, 0, 255)),
+    ColorSequenceKeypoint.new(0.7, Color3.fromRGB(220, 80, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 127))
+})
+uiGradient.Rotation = 0
+uiGradient.Parent = uiStroke
+
+-- تحريك التدرج البنفسجي
+task.spawn(function()
+    while button and button.Parent do
+        local tween = TweenService:Create(uiGradient, TweenInfo.new(7, Enum.EasingStyle.Linear), {Rotation = uiGradient.Rotation + 360})
+        tween:Play()
+        tween.Completed:Wait()
+        if uiGradient.Rotation >= 360 then uiGradient.Rotation = 0 end
+    end
+end)
+
+-- تأثير قطرة الماء
+local function CreateRipple(clickPosition)
+    local btnAbsPos = button.AbsolutePosition
+    local relativeX = clickPosition.X - btnAbsPos.X
+    local relativeY = clickPosition.Y - btnAbsPos.Y
+
+    local circle = Instance.new("Frame")
+    circle.AnchorPoint = Vector2.new(0.5, 0.5)
+    circle.Position = UDim2.new(0, relativeX, 0, relativeY)
+    circle.Size = UDim2.new(0, 0, 0, 0)
+    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    circle.BackgroundTransparency = 0.4
+    circle.ZIndex = button.ZIndex + 2
+
+    local circleCorner = Instance.new("UICorner")
+    circleCorner.CornerRadius = UDim.new(1, 0)
+    circleCorner.Parent = circle
+    circle.Parent = button
+
+    local tweenInfo = TweenInfo.new(0.35, Enum.EasingStyle.OutQuart, Enum.EasingDirection.Out)
+    local tween = TweenService:Create(circle, tweenInfo, {
+        Size = UDim2.new(0, 70, 0, 70),
+        BackgroundTransparency = 1
+    })
+    
+    tween:Play()
+    tween.Completed:Connect(function()
+        circle:Destroy()
+    end)
+end
+
+-- =======================================================
+-- دالة جلب المسدس مباشرة إلى بطن الشخصية
+-- =======================================================
+local function BringGunToStomach()
+    local character = LocalPlayer.Character
+    if not character then return end
+
+    -- تحديد منطقة البطن (UpperTorso أو HumanoidRootPart)
+    local stomachPart = character:FindFirstChild("UpperTorso") or character:FindFirstChild("HumanoidRootPart")
+    if not stomachPart then return end
+
+    -- البحث عن البارت المغناطيسي للمسدس الساقط
+    local gunPart = workspace:FindFirstChild("GunDrop", true) or workspace:FindFirstChild("GunDrob", true)
+    if not gunPart then return end
+
+    -- جلب السلاح فوراً إلى موقع البطن
+    if gunPart:IsA("BasePart") then
+        gunPart.CFrame = stomachPart.CFrame
+    elseif gunPart:IsA("Model") then
+        gunPart:PivotTo(stomachPart.CFrame)
+    end
+end
+
+-- =======================================================
+-- التحكم بالسحب والضغط
+-- =======================================================
+local dragging = false
+local activeInput = nil
+local dragStart = nil
+local startPos = nil
+local hasDraggedFar = false
+
+button.InputBegan:Connect(function(input)
+    if (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1) and not dragging then
+        dragging = true
+        activeInput = input
+        dragStart = input.Position
+        startPos = button.Position
+        hasDraggedFar = false
+
+        -- انيميشن ضغط خفيف
+        TweenService:Create(button, TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 38, 0, 38)
+        }):Play()
+
+        CreateRipple(input.Position)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input == activeInput then
+        local delta = input.Position - dragStart
+        if delta.Magnitude > 8 then
+            hasDraggedFar = true
+        end
+        
+        local targetPos = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+        
+        TweenService:Create(button, TweenInfo.new(0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+            Position = targetPos
+        }):Play()
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input == activeInput and dragging then
+        dragging = false
+        activeInput = nil
+
+        -- إرجاع الحجم الأصلي (45x45)
+        TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 45, 0, 45)
+        }):Play()
+
+        -- جلب المسدس إذا لم يمارس المستخدم سحب الزر
+        if not hasDraggedFar then
+            BringGunToStomach()
+        end
+    end
+end)
+        else
+            -- [ عند إيقاف الـ Toggle: حذف الزر العائم وإيقاف الميزة ]
+            print("تم إيقاف ميزة جلب المسدس")
+            
+            if playerGui:FindFirstChild("GrabGunGui") then
+                playerGui.GrabGunGui:Destroy()
+            end
+        end
+    end
+})
+
+-- متغيرات عامة لحفظ حالة الواجهة
+local flingGuiConnection = nil
+
+MainSection:Toggle({
+    Title = "تفعيل زر فلنج الشريف (Fling Sheriff)",
+    Value = false,
+    Callback = function(Value)
+       -- Services
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+
+local LocalPlayer = Players.LocalPlayer
+local playerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- حذف الواجهة القديمة للزر إن وجدت
+if playerGui:FindFirstChild("FlingSheriffButtonGui") then
+    playerGui.FlingSheriffButtonGui:Destroy()
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "FlingSheriffButtonGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- إنشاء زر fling sheriff
+local button = Instance.new("TextButton")
+button.Name = "Flingmurdrer Btn"
+button.Size = UDim2.new(0, 45, 0, 45)
+button.Position = UDim2.new(0, 125, 0, 20) -- موقع مناسب بجانب الأزرار الأخرى
+button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+button.BackgroundTransparency = 0.85
+button.Text = "fling\nmurdrer"
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.TextSize = 8
+button.Font = Enum.Font.Jura
+button.TextWrapped = true
+button.ClipsDescendants = true
+button.AutoButtonColor = false
+button.Parent = screenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(1, 0)
+uiCorner.Parent = button
+
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Thickness = 2.5
+uiStroke.Color = Color3.fromRGB(0, 255, 127)
+uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+uiStroke.Parent = button
+
+local uiGradient = Instance.new("UIGradient")
+uiGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 127)),
+    ColorSequenceKeypoint.new(0.3, Color3.fromRGB(170, 0, 255)),
+    ColorSequenceKeypoint.new(0.7, Color3.fromRGB(220, 80, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 127))
+})
+uiGradient.Rotation = 0
+uiGradient.Parent = uiStroke
+
+-- دوران التدرج
+task.spawn(function()
+    while button and button.Parent do
+        local tween = game:GetService("TweenService"):Create(uiGradient, TweenInfo.new(7, Enum.EasingStyle.Linear), {Rotation = uiGradient.Rotation + 360})
+        tween:Play()
+        tween.Completed:Wait()
+        if uiGradient.Rotation >= 360 then uiGradient.Rotation = 0 end
+    end
+end)
+
+-- تأثير الضغط
+local function CreateRipple(clickPosition)
+    local btnAbsPos = button.AbsolutePosition
+    local relativeX = clickPosition.X - btnAbsPos.X
+    local relativeY = clickPosition.Y - btnAbsPos.Y
+
+    local circle = Instance.new("Frame")
+    circle.AnchorPoint = Vector2.new(0.5, 0.5)
+    circle.Position = UDim2.new(0, relativeX, 0, relativeY)
+    circle.Size = UDim2.new(0, 0, 0, 0)
+    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    circle.BackgroundTransparency = 0.4
+    circle.ZIndex = button.ZIndex + 2
+
+    local circleCorner = Instance.new("UICorner")
+    circleCorner.CornerRadius = UDim.new(1, 0)
+    circleCorner.Parent = circle
+    circle.Parent = button
+
+    local tween = game:GetService("TweenService"):Create(circle, TweenInfo.new(0.35, Enum.EasingStyle.OutQuart, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 70, 0, 70),
+        BackgroundTransparency = 1
+    })
+    
+    tween:Play()
+    tween.Completed:Connect(function()
+        circle:Destroy()
+    end)
+end
+
+-- =======================================================
+-- وظيفة البحث عن الشريف والفلنق الخارق
+-- =======================================================
+local function GetSheriff()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local backpack = player:FindFirstChild("Backpack")
+            local char = player.Character
+            -- فحص وجود المسدس مع الشريف
+            local hasGun = (char:FindFirstChild("knife") or char:FindFirstChild("Revolver") or 
+                           (backpack and (backpack:FindFirstChild("knife") or backpack:FindFirstChild("Revolver"))))
+            if hasGun then
+                return player
+            end
+        end
+    end
+    return nil
+end
+
+local function ExecuteFlingSheriff()
+    local playerToFling = GetSheriff()
+
+    if not playerToFling then
+        if fu and fu.notification then
+            fu.notification("Sheriff not found or hasn't spawned with the gun yet.")
+        else
+            warn("Sheriff not found or hasn't spawned with the gun yet.")
+        end
+        return
+    end
+
+    if getgenv and getgenv().antiFling then
+        if fu and fu.notification then
+            fu.notification("Turn off anti-fling to use fling.")
+        end
+        return
+    end
+
+    local player = Players.LocalPlayer
+    local Targets = {playerToFling}
+
+    local AllBool = false
+
+    local SkidFling = function(TargetPlayer)
+        local Character = player.Character
+        local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+        local RootPart = Humanoid and Humanoid.RootPart
+
+        local TCharacter = TargetPlayer.Character
+        local THumanoid
+        local TRootPart
+        local THead
+        local Accessory
+        local Handle
+
+        if not TCharacter then return end
+
+        if TCharacter:FindFirstChildOfClass("Humanoid") then
+            THumanoid = TCharacter:FindFirstChildOfClass("Humanoid")
+        end
+        if THumanoid and THumanoid.RootPart then
+            TRootPart = THumanoid.RootPart
+        end
+        if TCharacter:FindFirstChild("Head") then
+            THead = TCharacter.Head
+        end
+        if TCharacter:FindFirstChildOfClass("Accessory") then
+            Accessory = TCharacter:FindFirstChildOfClass("Accessory")
+        end
+        if Accessory and Accessory:FindFirstChild("Handle") then
+            Handle = Accessory.Handle
+        end
+
+        if Character and Humanoid and RootPart then
+            if RootPart.Velocity.Magnitude < 50 then
+                getgenv().OldPos = RootPart.CFrame
+            end
+
+            if THead then
+                if THead.Velocity.Magnitude > 500 then
+                    if fu and fu.dialog then
+                        fu.dialog("Player flung", "Player is already flung. Fling again?", {"Fling again", "No"})
+                        if fu.waitfordialog() == "No" then return fu.closedialog() end
+                        fu.closedialog()
+                    end
+                end
+            elseif not THead and Handle then
+                if Handle.Velocity.Magnitude > 500 then
+                    if fu and fu.dialog then
+                        fu.dialog("Player flung", "Player is already flung. Fling again?", {"Fling again", "No"})
+                        if fu.waitfordialog() == "No" then return fu.closedialog() end
+                        fu.closedialog()
+                    end
+                end
+            end
+
+            if THead then
+                workspace.CurrentCamera.CameraSubject = THead
+            elseif not THead and Handle then
+                workspace.CurrentCamera.CameraSubject = Handle
+            elseif THumanoid and TRootPart then
+                workspace.CurrentCamera.CameraSubject = THumanoid
+            end
+
+            if not TCharacter:FindFirstChildWhichIsA("BasePart") then
+                return
+            end
+
+            local FPos = function(BasePart, Pos, Ang)
+                RootPart.CFrame = CFrame.new(BasePart.Position) * Pos * Ang
+                Character:SetPrimaryPartCFrame(CFrame.new(BasePart.Position) * Pos * Ang)
+                RootPart.Velocity = Vector3.new(9e7, 9e7 * 10, 9e7)
+                RootPart.RotVelocity = Vector3.new(9e8, 9e8, 9e8)
+            end
+
+            local SFBasePart = function(BasePart)
+                local TimeToWait = 2
+                local Time = tick()
+                local Angle = 0
+
+                repeat
+                    if RootPart and THumanoid then
+                        if BasePart.Velocity.Magnitude < 50 then
+                            Angle = Angle + 100
+
+                            FPos(BasePart, CFrame.new(0, 1.5, 0) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle),0 ,0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, 0) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(2.25, 1.5, -2.25) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(-2.25, -1.5, 2.25) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, 1.5, 0) + THumanoid.MoveDirection,CFrame.Angles(math.rad(Angle), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, 0) + THumanoid.MoveDirection,CFrame.Angles(math.rad(Angle), 0, 0))
+                            task.wait()
+                        else
+                            FPos(BasePart, CFrame.new(0, 1.5, THumanoid.WalkSpeed), CFrame.Angles(math.rad(90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, -THumanoid.WalkSpeed), CFrame.Angles(0, 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, 1.5, THumanoid.WalkSpeed), CFrame.Angles(math.rad(90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, 1.5, TRootPart.Velocity.Magnitude / 1.25), CFrame.Angles(math.rad(90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, -TRootPart.Velocity.Magnitude / 1.25), CFrame.Angles(0, 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, 1.5, TRootPart.Velocity.Magnitude / 1.25), CFrame.Angles(math.rad(90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, 0), CFrame.Angles(math.rad(90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, 0), CFrame.Angles(0, 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5 ,0), CFrame.Angles(math.rad(-90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, 0), CFrame.Angles(0, 0, 0))
+                            task.wait()
+                        end
+                    else
+                        break
+                    end
+                until BasePart.Velocity.Magnitude > 500 or BasePart.Parent ~= TargetPlayer.Character or TargetPlayer.Parent ~= Players or TargetPlayer.Character ~= TCharacter or THumanoid.Sit or Humanoid.Health <= 0 or tick() > Time + TimeToWait
+            end
+
+            getgenv().FPDH = workspace.FallenPartsDestroyHeight
+            workspace.FallenPartsDestroyHeight = 0/0
+
+            local BV = Instance.new("BodyVelocity")
+            BV.Name = "EpixVel"
+            BV.Parent = RootPart
+            BV.Velocity = Vector3.new(9e8, 9e8, 9e8)
+            BV.MaxForce = Vector3.new(1/0, 1/0, 1/0)
+
+            Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+
+            if TRootPart and THead then
+                if (TRootPart.CFrame.p - THead.CFrame.p).Magnitude > 5 then
+                    SFBasePart(THead)
+                else
+                    SFBasePart(TRootPart)
+                end
+            elseif TRootPart and not THead then
+                SFBasePart(TRootPart)
+            elseif not TRootPart and THead then
+                SFBasePart(THead)
+            elseif not TRootPart and not THead and Accessory and Handle then
+                SFBasePart(Handle)
+            else
+                if fu and fu.notification then
+                    fu.notification("Can't find a proper part of target player to fling.")
+                end
+            end
+
+            BV:Destroy()
+            Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+            workspace.CurrentCamera.CameraSubject = Humanoid
+
+            repeat
+                if getgenv().OldPos then
+                    RootPart.CFrame = getgenv().OldPos * CFrame.new(0, .5, 0)
+                    Character:SetPrimaryPartCFrame(getgenv().OldPos * CFrame.new(0, .5, 0))
+                end
+                Humanoid:ChangeState("GettingUp")
+                for _, x in ipairs(Character:GetChildren()) do
+                    if x:IsA("BasePart") then
+                        x.Velocity, x.RotVelocity = Vector3.new(), Vector3.new()
+                    end
+                end
+                task.wait()
+            until not getgenv().OldPos or (RootPart.Position - getgenv().OldPos.p).Magnitude < 25
+
+            if getgenv().FPDH then
+                workspace.FallenPartsDestroyHeight = getgenv().FPDH
+            end
+        else
+            if fu and fu.notification then
+                fu.notification("No valid character of said target player. May have died.")
+            end
+        end
+    end
+
+    SkidFling(Targets[1])
+end
+
+-- =======================================================
+-- التحكم بالضغط والسحب للزر
+-- =======================================================
+local dragging = false
+local activeInput = nil
+local dragStart = nil
+local startPos = nil
+local hasDraggedFar = false
+
+button.InputBegan:Connect(function(input)
+    if (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1) and not dragging then
+        dragging = true
+        activeInput = input
+        dragStart = input.Position
+        startPos = button.Position
+        hasDraggedFar = false
+
+        game:GetService("TweenService"):Create(button, TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 38, 0, 38)
+        }):Play()
+
+        CreateRipple(input.Position)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input == activeInput then
+        local delta = input.Position - dragStart
+        if delta.Magnitude > 8 then
+            hasDraggedFar = true
+        end
+        
+        local targetPos = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+        
+        game:GetService("TweenService"):Create(button, TweenInfo.new(0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+            Position = targetPos
+        }):Play()
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input == activeInput and dragging then
+        dragging = false
+        activeInput = nil
+
+        game:GetService("TweenService"):Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 45, 0, 45)
+        }):Play()
+
+        if not hasDraggedFar then
+            task.spawn(ExecuteFlingSheriff)
+        end
+    end
+end)
+        else
+            -- [ عند إيقاف الـ Toggle: حذف الزر العائم وتفريغ الذاكرة ]
+            print("تم إيقاف ميزة زر فلنج الشريف")
+            
+            if playerGui:FindFirstChild("FlingSheriffButtonGui") then
+                playerGui.FlingSheriffButtonGui:Destroy()
+            end
+        end
+    end
+})
+
+-- متغيرات عامة لحفظ حالة الواجهة
+local stealGunConnection = nil
+
+buttonSection:Toggle({
+    Title = "button stael gun",
+    Value = false,
+    Callback = function(Value)
+        -- Services
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local LocalPlayer = Players.LocalPlayer
+local playerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- تنظيف الواجهة القديمة إن وجدت
+if playerGui:FindFirstChild("StealGunButtonGui") then
+    playerGui.StealGunButtonGui:Destroy()
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "StealGunButtonGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- إنشاء الزر باسم steal Gun
+local button = Instance.new("TextButton")
+button.Name = "StealGunBtn"
+button.Size = UDim2.new(0, 45, 0, 45)
+button.Position = UDim2.new(0, 240, 0, 20)
+button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+button.BackgroundTransparency = 0.85
+button.Text = "steal\nGun"
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.TextSize = 8
+button.Font = Enum.Font.Jura
+button.TextWrapped = true
+button.ClipsDescendants = true
+button.AutoButtonColor = false
+button.Parent = screenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(1, 0)
+uiCorner.Parent = button
+
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Thickness = 2.5
+uiStroke.Color = Color3.fromRGB(0, 255, 127)
+uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+uiStroke.Parent = button
+
+local uiGradient = Instance.new("UIGradient")
+uiGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
+    ColorSequenceKeypoint.new(0.3, Color3.fromRGB(170, 0, 255)),
+    ColorSequenceKeypoint.new(0.7, Color3.fromRGB(220, 80, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 127))
+})
+uiGradient.Rotation = 0
+uiGradient.Parent = uiStroke
+
+-- دوران التدرج الأنيق
+task.spawn(function()
+    while button and button.Parent do
+        local tween = TweenService:Create(uiGradient, TweenInfo.new(7, Enum.EasingStyle.Linear), {Rotation = uiGradient.Rotation + 360})
+        tween:Play()
+        tween.Completed:Wait()
+        if uiGradient.Rotation >= 360 then uiGradient.Rotation = 0 end
+    end
+end)
+
+-- تأثير الضغط Ripple
+local function CreateRipple(clickPosition)
+    local btnAbsPos = button.AbsolutePosition
+    local relativeX = clickPosition.X - btnAbsPos.X
+    local relativeY = clickPosition.Y - btnAbsPos.Y
+
+    local circle = Instance.new("Frame")
+    circle.AnchorPoint = Vector2.new(0.5, 0.5)
+    circle.Position = UDim2.new(0, relativeX, 0, relativeY)
+    circle.Size = UDim2.new(0, 0, 0, 0)
+    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    circle.BackgroundTransparency = 0.4
+    circle.ZIndex = button.ZIndex + 2
+
+    local circleCorner = Instance.new("UICorner")
+    circleCorner.CornerRadius = UDim.new(1, 0)
+    circleCorner.Parent = circle
+    circle.Parent = button
+
+    local tween = TweenService:Create(circle, TweenInfo.new(0.35, Enum.EasingStyle.OutQuart, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 70, 0, 70),
+        BackgroundTransparency = 1
+    })
+    
+    tween:Play()
+    tween.Completed:Connect(function()
+        circle:Destroy()
+    end)
+end
+
+-- =======================================================
+-- 1) كشف الشريف من الـ Role
+-- =======================================================
+local function isSheriffByRole(p)
+    if not p then return false end
+
+    local roleValObj = p:FindFirstChild("ServerRole") or p:FindFirstChild("Role")
+        or (p.Character and (p.Character:FindFirstChild("ServerRole") or p.Character:FindFirstChild("Role")))
+
+    if roleValObj and roleValObj:IsA("ValueBase") then
+        local val = tostring(roleValObj.Value)
+        if val == "Sheriff" or val == "Hero" then return true end
+    end
+
+    local attrRole = p:GetAttribute("ServerRole") or p:GetAttribute("Role")
+    if attrRole and (tostring(attrRole) == "Sheriff" or tostring(attrRole) == "Hero") then
+        return true
+    end
+
+    local getPlayerData = ReplicatedStorage:FindFirstChild("GetPlayerData", true)
+    if getPlayerData and getPlayerData:IsA("RemoteFunction") then
+        local success, data = pcall(function() return getPlayerData:InvokeServer() end)
+        if success and type(data) == "table" and data[p.Name] then
+            local role = data[p.Name].Role
+            if role == "Sheriff" or role == "Hero" then return true end
+        end
+    end
+
+    return false
+end
+
+local function GetSheriff()
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer and p.Character then
+            if isSheriffByRole(p) then
+                return p
+            end
+        end
+    end
+    return nil
+end
+
+-- =======================================================
+-- 2) فحص هل يوجد أي لاعب يملك المسدس في يده أو حقيبته
+-- =======================================================
+local function IsAnyoneHoldingGun()
+    for _, p in ipairs(Players:GetPlayers()) do
+        local backpack = p:FindFirstChild("Backpack")
+        local char = p.Character
+
+        local hasGunInChar = char and (char:FindFirstChild("Gun") or char:FindFirstChild("Revolver"))
+        local hasGunInBackpack = backpack and (backpack:FindFirstChild("Gun") or backpack:FindFirstChild("Revolver"))
+
+        if hasGunInChar or hasGunInBackpack then
+            return true
+        end
+    end
+    return false
+end
+
+-- =======================================================
+-- 3) دالة البحث المحسّنة لإيجاد بارت المسدس بالخريطة
+-- =======================================================
+local function FindDroppedGun()
+    -- البحث المباشر في workspace
+    local directMatch = workspace:FindFirstChild("GunDrop") or workspace:FindFirstChild("GunDrob") or workspace:FindFirstChild("Gun") or workspace:FindFirstChild("Revolver")
+    if directMatch then return directMatch end
+
+    -- البحث الشامل داخل المجلدات والأطفال
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj.Name == "GunDrop" or obj.Name == "GunDrob" or (obj.Name == "Gun" and not obj:IsA("Tool") and not obj:IsDescendantOf(Players)) then
+            return obj
+        end
+    end
+
+    return nil
+end
+
+-- =======================================================
+-- 4) دالة النقل الذكية القوية إلى منطقة البطن
+-- =======================================================
+local function AutoBringGunToTorso()
+    task.spawn(function()
+        local startTime = tick()
+        -- ينتظر حتى اختفاء المسدس من أيدي وحقائب الجميع (تأكيد موت الشريف)
+        while tick() - startTime < 15 do
+            if not IsAnyoneHoldingGun() then
+                local droppedGun = FindDroppedGun()
+                if droppedGun then
+                    local myChar = LocalPlayer.Character
+                    local myTorso = myChar and (myChar:FindFirstChild("UpperTorso") or myChar:FindFirstChild("Torso") or myChar:FindFirstChild("HumanoidRootPart"))
+                    
+                    if myTorso then
+                        -- تكرار النقل لنصف ثانية لإجبار محرك اللعبة على تسجيل اللمس تلقائياً
+                        local bringTime = tick()
+                        while tick() - bringTime < 1.5 do
+                            if droppedGun:IsA("Model") then
+                                droppedGun:PivotTo(myTorso.CFrame)
+                            elseif droppedGun:IsA("BasePart") then
+                                droppedGun.CFrame = myTorso.CFrame
+                            elseif droppedGun:FindFirstChild("Handle") then
+                                droppedGun.Handle.CFrame = myTorso.CFrame
+                            end
+                            
+                            -- فحص لو أداة Gun أصبحت بالحقيبة تتوقف العملية فوراً
+                            if LocalPlayer.Backpack:FindFirstChild("Gun") or (myChar and myChar:FindFirstChild("Gun")) then
+                                break
+                            end
+                            task.wait()
+                        end
+                    end
+                    break
+                end
+            end
+            task.wait(0.05)
+        end
+    end)
+end
+
+-- =======================================================
+-- تنفيذ العملية بالكامل
+-- =======================================================
+local function ExecuteStealGun()
+    local targetSheriff = GetSheriff()
+
+    if not targetSheriff then
+        warn("Sheriff not found in server roles!")
+        return
+    end
+
+    -- تشغيل مراقبة موت الشريف وسحب البارت للبطن
+    AutoBringGunToTorso()
+
+    -- الفلنق الأصلي دون أي تغيير
+    local player = LocalPlayer
+    local Targets = {targetSheriff}
+
+    local SkidFling = function(TargetPlayer)
+        local Character = player.Character
+        local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+        local RootPart = Humanoid and Humanoid.RootPart
+
+        local TCharacter = TargetPlayer.Character
+        local THumanoid
+        local TRootPart
+        local THead
+        local Accessory
+        local Handle
+
+        if not TCharacter then return end
+
+        if TCharacter:FindFirstChildOfClass("Humanoid") then
+            THumanoid = TCharacter:FindFirstChildOfClass("Humanoid")
+        end
+        if THumanoid and THumanoid.RootPart then
+            TRootPart = THumanoid.RootPart
+        end
+        if TCharacter:FindFirstChild("Head") then
+            THead = TCharacter.Head
+        end
+        if TCharacter:FindFirstChildOfClass("Accessory") then
+            Accessory = TCharacter:FindFirstChildOfClass("Accessory")
+        end
+        if Accessory and Accessory:FindFirstChild("Handle") then
+            Handle = Accessory.Handle
+        end
+
+        if Character and Humanoid and RootPart then
+            if RootPart.Velocity.Magnitude < 50 then
+                getgenv().OldPos = RootPart.CFrame
+            end
+
+            if THead then
+                workspace.CurrentCamera.CameraSubject = THead
+            elseif not THead and Handle then
+                workspace.CurrentCamera.CameraSubject = Handle
+            elseif THumanoid and TRootPart then
+                workspace.CurrentCamera.CameraSubject = THumanoid
+            end
+
+            if not TCharacter:FindFirstChildWhichIsA("BasePart") then
+                return
+            end
+
+            local FPos = function(BasePart, Pos, Ang)
+                RootPart.CFrame = CFrame.new(BasePart.Position) * Pos * Ang
+                Character:SetPrimaryPartCFrame(CFrame.new(BasePart.Position) * Pos * Ang)
+                RootPart.Velocity = Vector3.new(9e7, 9e7 * 10, 9e7)
+                RootPart.RotVelocity = Vector3.new(9e8, 9e8, 9e8)
+            end
+
+            local SFBasePart = function(BasePart)
+                local TimeToWait = 2.5
+                local Time = tick()
+                local Angle = 0
+
+                repeat
+                    if RootPart and THumanoid then
+                        if BasePart.Velocity.Magnitude < 50 then
+                            Angle = Angle + 100
+
+                            FPos(BasePart, CFrame.new(0, 1.5, 0) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle),0 ,0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, 0) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(2.25, 1.5, -2.25) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(-2.25, -1.5, 2.25) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, 1.5, 0) + THumanoid.MoveDirection,CFrame.Angles(math.rad(Angle), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, 0) + THumanoid.MoveDirection,CFrame.Angles(math.rad(Angle), 0, 0))
+                            task.wait()
+                        else
+                            FPos(BasePart, CFrame.new(0, 1.5, THumanoid.WalkSpeed), CFrame.Angles(math.rad(90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, -THumanoid.WalkSpeed), CFrame.Angles(0, 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, 1.5, THumanoid.WalkSpeed), CFrame.Angles(math.rad(90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, 1.5, TRootPart.Velocity.Magnitude / 1.25), CFrame.Angles(math.rad(90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, -TRootPart.Velocity.Magnitude / 1.25), CFrame.Angles(0, 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, 1.5, TRootPart.Velocity.Magnitude / 1.25), CFrame.Angles(math.rad(90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, 0), CFrame.Angles(math.rad(90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, 0), CFrame.Angles(0, 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5 ,0), CFrame.Angles(math.rad(-90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, 0), CFrame.Angles(0, 0, 0))
+                            task.wait()
+                        end
+                    else
+                        break
+                    end
+                until BasePart.Velocity.Magnitude > 500 or BasePart.Parent ~= TargetPlayer.Character or TargetPlayer.Parent ~= Players or TargetPlayer.Character ~= TCharacter or THumanoid.Sit or Humanoid.Health <= 0 or tick() > Time + TimeToWait
+            end
+
+            getgenv().FPDH = workspace.FallenPartsDestroyHeight
+            workspace.FallenPartsDestroyHeight = 0/0
+
+            local BV = Instance.new("BodyVelocity")
+            BV.Name = "EpixVel"
+            BV.Parent = RootPart
+            BV.Velocity = Vector3.new(9e8, 9e8, 9e8)
+            BV.MaxForce = Vector3.new(1/0, 1/0, 1/0)
+
+            Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+
+            if TRootPart and THead then
+                if (TRootPart.CFrame.p - THead.CFrame.p).Magnitude > 5 then
+                    SFBasePart(THead)
+                else
+                    SFBasePart(TRootPart)
+                end
+            elseif TRootPart and not THead then
+                SFBasePart(TRootPart)
+            elseif not TRootPart and THead then
+                SFBasePart(THead)
+            elseif not TRootPart and not THead and Accessory and Handle then
+                SFBasePart(Handle)
+            end
+
+            BV:Destroy()
+            Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+            workspace.CurrentCamera.CameraSubject = Humanoid
+
+            repeat
+                if getgenv().OldPos then
+                    RootPart.CFrame = getgenv().OldPos * CFrame.new(0, .5, 0)
+                    Character:SetPrimaryPartCFrame(getgenv().OldPos * CFrame.new(0, .5, 0))
+                end
+                Humanoid:ChangeState("GettingUp")
+                for _, x in ipairs(Character:GetChildren()) do
+                    if x:IsA("BasePart") then
+                        x.Velocity, x.RotVelocity = Vector3.new(), Vector3.new()
+                    end
+                end
+                task.wait()
+            until not getgenv().OldPos or (RootPart.Position - getgenv().OldPos.p).Magnitude < 25
+
+            if getgenv().FPDH then
+                workspace.FallenPartsDestroyHeight = getgenv().FPDH
+            end
+        end
+    end
+
+    SkidFling(Targets[1])
+end
+
+-- =======================================================
+-- التحكم بالضغط والسحب للزر
+-- =======================================================
+local dragging = false
+local activeInput = nil
+local dragStart = nil
+local startPos = nil
+local hasDraggedFar = false
+
+button.InputBegan:Connect(function(input)
+    if (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1) and not dragging then
+        dragging = true
+        activeInput = input
+        dragStart = input.Position
+        startPos = button.Position
+        hasDraggedFar = false
+
+        TweenService:Create(button, TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 38, 0, 38)
+        }):Play()
+
+        CreateRipple(input.Position)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input == activeInput then
+        local delta = input.Position - dragStart
+        if delta.Magnitude > 8 then
+            hasDraggedFar = true
+        end
+        
+        local targetPos = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+        
+        TweenService:Create(button, TweenInfo.new(0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+            Position = targetPos
+        }):Play()
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input == activeInput and dragging then
+        dragging = false
+        activeInput = nil
+
+        TweenService:Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 45, 0, 45)
+        }):Play()
+
+        if not hasDraggedFar then
+            task.spawn(ExecuteStealGun)
+        end
+    end
+end)
+        else
+            -- [ عند إيقاف الـ Toggle: حذف الزر العائم وإيقاف العمليات ]
+            print("تم إيقاف ميزة سرقة المسدس")
+            
+            if playerGui:FindFirstChild("StealGunButtonGui") then
+                playerGui.StealGunButtonGui:Destroy()
+            end
+        end
+    end
+})
+
+-- متغير عام لحفظ حالة واجهة فلنق الشريف
+local flingSheriffConnection = nil
+
+buttonSection:Toggle({
+    Title = "button fling Sheriff",
+    Value = false,
+    Callback = function(Value)
+        -- Services
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+
+local LocalPlayer = Players.LocalPlayer
+local playerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- حذف الواجهة القديمة للزر إن وجدت
+if playerGui:FindFirstChild("FlingSheriffButtonGui") then
+    playerGui.FlingSheriffButtonGui:Destroy()
+end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "FlingSheriffButtonGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- إنشاء زر fling sheriff
+local button = Instance.new("TextButton")
+button.Name = "FlingSheriffBtn"
+button.Size = UDim2.new(0, 45, 0, 45)
+button.Position = UDim2.new(0, 125, 0, 20) -- موقع مناسب بجانب الأزرار الأخرى
+button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+button.BackgroundTransparency = 0.85
+button.Text = "fling\nsheriff"
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.TextSize = 8
+button.Font = Enum.Font.Jura
+button.TextWrapped = true
+button.ClipsDescendants = true
+button.AutoButtonColor = false
+button.Parent = screenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(1, 0)
+uiCorner.Parent = button
+
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Thickness = 2.5
+uiStroke.Color = Color3.fromRGB(0, 255, 127)
+uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+uiStroke.Parent = button
+
+local uiGradient = Instance.new("UIGradient")
+uiGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 255, 127)),
+    ColorSequenceKeypoint.new(0.3, Color3.fromRGB(170, 0, 255)),
+    ColorSequenceKeypoint.new(0.7, Color3.fromRGB(220, 80, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 127))
+})
+uiGradient.Rotation = 0
+uiGradient.Parent = uiStroke
+
+-- دوران التدرج
+task.spawn(function()
+    while button and button.Parent do
+        local tween = game:GetService("TweenService"):Create(uiGradient, TweenInfo.new(7, Enum.EasingStyle.Linear), {Rotation = uiGradient.Rotation + 360})
+        tween:Play()
+        tween.Completed:Wait()
+        if uiGradient.Rotation >= 360 then uiGradient.Rotation = 0 end
+    end
+end)
+
+-- تأثير الضغط
+local function CreateRipple(clickPosition)
+    local btnAbsPos = button.AbsolutePosition
+    local relativeX = clickPosition.X - btnAbsPos.X
+    local relativeY = clickPosition.Y - btnAbsPos.Y
+
+    local circle = Instance.new("Frame")
+    circle.AnchorPoint = Vector2.new(0.5, 0.5)
+    circle.Position = UDim2.new(0, relativeX, 0, relativeY)
+    circle.Size = UDim2.new(0, 0, 0, 0)
+    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    circle.BackgroundTransparency = 0.4
+    circle.ZIndex = button.ZIndex + 2
+
+    local circleCorner = Instance.new("UICorner")
+    circleCorner.CornerRadius = UDim.new(1, 0)
+    circleCorner.Parent = circle
+    circle.Parent = button
+
+    local tween = game:GetService("TweenService"):Create(circle, TweenInfo.new(0.35, Enum.EasingStyle.OutQuart, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 70, 0, 70),
+        BackgroundTransparency = 1
+    })
+    
+    tween:Play()
+    tween.Completed:Connect(function()
+        circle:Destroy()
+    end)
+end
+
+-- =======================================================
+-- وظيفة البحث عن الشريف والفلنق الخارق
+-- =======================================================
+local function GetSheriff()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local backpack = player:FindFirstChild("Backpack")
+            local char = player.Character
+            -- فحص وجود المسدس مع الشريف
+            local hasGun = (char:FindFirstChild("Gun") or char:FindFirstChild("Revolver") or 
+                           (backpack and (backpack:FindFirstChild("Gun") or backpack:FindFirstChild("Revolver"))))
+            if hasGun then
+                return player
+            end
+        end
+    end
+    return nil
+end
+
+local function ExecuteFlingSheriff()
+    local playerToFling = GetSheriff()
+
+    if not playerToFling then
+        if fu and fu.notification then
+            fu.notification("Sheriff not found or hasn't spawned with the gun yet.")
+        else
+            warn("Sheriff not found or hasn't spawned with the gun yet.")
+        end
+        return
+    end
+
+    if getgenv and getgenv().antiFling then
+        if fu and fu.notification then
+            fu.notification("Turn off anti-fling to use fling.")
+        end
+        return
+    end
+
+    local player = Players.LocalPlayer
+    local Targets = {playerToFling}
+
+    local AllBool = false
+
+    local SkidFling = function(TargetPlayer)
+        local Character = player.Character
+        local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+        local RootPart = Humanoid and Humanoid.RootPart
+
+        local TCharacter = TargetPlayer.Character
+        local THumanoid
+        local TRootPart
+        local THead
+        local Accessory
+        local Handle
+
+        if not TCharacter then return end
+
+        if TCharacter:FindFirstChildOfClass("Humanoid") then
+            THumanoid = TCharacter:FindFirstChildOfClass("Humanoid")
+        end
+        if THumanoid and THumanoid.RootPart then
+            TRootPart = THumanoid.RootPart
+        end
+        if TCharacter:FindFirstChild("Head") then
+            THead = TCharacter.Head
+        end
+        if TCharacter:FindFirstChildOfClass("Accessory") then
+            Accessory = TCharacter:FindFirstChildOfClass("Accessory")
+        end
+        if Accessory and Accessory:FindFirstChild("Handle") then
+            Handle = Accessory.Handle
+        end
+
+        if Character and Humanoid and RootPart then
+            if RootPart.Velocity.Magnitude < 50 then
+                getgenv().OldPos = RootPart.CFrame
+            end
+
+            if THead then
+                if THead.Velocity.Magnitude > 500 then
+                    if fu and fu.dialog then
+                        fu.dialog("Player flung", "Player is already flung. Fling again?", {"Fling again", "No"})
+                        if fu.waitfordialog() == "No" then return fu.closedialog() end
+                        fu.closedialog()
+                    end
+                end
+            elseif not THead and Handle then
+                if Handle.Velocity.Magnitude > 500 then
+                    if fu and fu.dialog then
+                        fu.dialog("Player flung", "Player is already flung. Fling again?", {"Fling again", "No"})
+                        if fu.waitfordialog() == "No" then return fu.closedialog() end
+                        fu.closedialog()
+                    end
+                end
+            end
+
+            if THead then
+                workspace.CurrentCamera.CameraSubject = THead
+            elseif not THead and Handle then
+                workspace.CurrentCamera.CameraSubject = Handle
+            elseif THumanoid and TRootPart then
+                workspace.CurrentCamera.CameraSubject = THumanoid
+            end
+
+            if not TCharacter:FindFirstChildWhichIsA("BasePart") then
+                return
+            end
+
+            local FPos = function(BasePart, Pos, Ang)
+                RootPart.CFrame = CFrame.new(BasePart.Position) * Pos * Ang
+                Character:SetPrimaryPartCFrame(CFrame.new(BasePart.Position) * Pos * Ang)
+                RootPart.Velocity = Vector3.new(9e7, 9e7 * 10, 9e7)
+                RootPart.RotVelocity = Vector3.new(9e8, 9e8, 9e8)
+            end
+
+            local SFBasePart = function(BasePart)
+                local TimeToWait = 2
+                local Time = tick()
+                local Angle = 0
+
+                repeat
+                    if RootPart and THumanoid then
+                        if BasePart.Velocity.Magnitude < 50 then
+                            Angle = Angle + 100
+
+                            FPos(BasePart, CFrame.new(0, 1.5, 0) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle),0 ,0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, 0) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(2.25, 1.5, -2.25) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(-2.25, -1.5, 2.25) + THumanoid.MoveDirection * BasePart.Velocity.Magnitude / 1.25, CFrame.Angles(math.rad(Angle), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, 1.5, 0) + THumanoid.MoveDirection,CFrame.Angles(math.rad(Angle), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, 0) + THumanoid.MoveDirection,CFrame.Angles(math.rad(Angle), 0, 0))
+                            task.wait()
+                        else
+                            FPos(BasePart, CFrame.new(0, 1.5, THumanoid.WalkSpeed), CFrame.Angles(math.rad(90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, -THumanoid.WalkSpeed), CFrame.Angles(0, 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, 1.5, THumanoid.WalkSpeed), CFrame.Angles(math.rad(90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, 1.5, TRootPart.Velocity.Magnitude / 1.25), CFrame.Angles(math.rad(90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, -TRootPart.Velocity.Magnitude / 1.25), CFrame.Angles(0, 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, 1.5, TRootPart.Velocity.Magnitude / 1.25), CFrame.Angles(math.rad(90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, 0), CFrame.Angles(math.rad(90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, 0), CFrame.Angles(0, 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5 ,0), CFrame.Angles(math.rad(-90), 0, 0))
+                            task.wait()
+
+                            FPos(BasePart, CFrame.new(0, -1.5, 0), CFrame.Angles(0, 0, 0))
+                            task.wait()
+                        end
+                    else
+                        break
+                    end
+                until BasePart.Velocity.Magnitude > 500 or BasePart.Parent ~= TargetPlayer.Character or TargetPlayer.Parent ~= Players or TargetPlayer.Character ~= TCharacter or THumanoid.Sit or Humanoid.Health <= 0 or tick() > Time + TimeToWait
+            end
+
+            getgenv().FPDH = workspace.FallenPartsDestroyHeight
+            workspace.FallenPartsDestroyHeight = 0/0
+
+            local BV = Instance.new("BodyVelocity")
+            BV.Name = "EpixVel"
+            BV.Parent = RootPart
+            BV.Velocity = Vector3.new(9e8, 9e8, 9e8)
+            BV.MaxForce = Vector3.new(1/0, 1/0, 1/0)
+
+            Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+
+            if TRootPart and THead then
+                if (TRootPart.CFrame.p - THead.CFrame.p).Magnitude > 5 then
+                    SFBasePart(THead)
+                else
+                    SFBasePart(TRootPart)
+                end
+            elseif TRootPart and not THead then
+                SFBasePart(TRootPart)
+            elseif not TRootPart and THead then
+                SFBasePart(THead)
+            elseif not TRootPart and not THead and Accessory and Handle then
+                SFBasePart(Handle)
+            else
+                if fu and fu.notification then
+                    fu.notification("Can't find a proper part of target player to fling.")
+                end
+            end
+
+            BV:Destroy()
+            Humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+            workspace.CurrentCamera.CameraSubject = Humanoid
+
+            repeat
+                if getgenv().OldPos then
+                    RootPart.CFrame = getgenv().OldPos * CFrame.new(0, .5, 0)
+                    Character:SetPrimaryPartCFrame(getgenv().OldPos * CFrame.new(0, .5, 0))
+                end
+                Humanoid:ChangeState("GettingUp")
+                for _, x in ipairs(Character:GetChildren()) do
+                    if x:IsA("BasePart") then
+                        x.Velocity, x.RotVelocity = Vector3.new(), Vector3.new()
+                    end
+                end
+                task.wait()
+            until not getgenv().OldPos or (RootPart.Position - getgenv().OldPos.p).Magnitude < 25
+
+            if getgenv().FPDH then
+                workspace.FallenPartsDestroyHeight = getgenv().FPDH
+            end
+        else
+            if fu and fu.notification then
+                fu.notification("No valid character of said target player. May have died.")
+            end
+        end
+    end
+
+    SkidFling(Targets[1])
+end
+
+-- =======================================================
+-- التحكم بالضغط والسحب للزر
+-- =======================================================
+local dragging = false
+local activeInput = nil
+local dragStart = nil
+local startPos = nil
+local hasDraggedFar = false
+
+button.InputBegan:Connect(function(input)
+    if (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1) and not dragging then
+        dragging = true
+        activeInput = input
+        dragStart = input.Position
+        startPos = button.Position
+        hasDraggedFar = false
+
+        game:GetService("TweenService"):Create(button, TweenInfo.new(0.15, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 38, 0, 38)
+        }):Play()
+
+        CreateRipple(input.Position)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input == activeInput then
+        local delta = input.Position - dragStart
+        if delta.Magnitude > 8 then
+            hasDraggedFar = true
+        end
+        
+        local targetPos = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+        
+        game:GetService("TweenService"):Create(button, TweenInfo.new(0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+            Position = targetPos
+        }):Play()
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input == activeInput and dragging then
+        dragging = false
+        activeInput = nil
+
+        game:GetService("TweenService"):Create(button, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 45, 0, 45)
+        }):Play()
+
+        if not hasDraggedFar then
+            task.spawn(ExecuteFlingSheriff)
+        end
+    end
+end)
+        else
+            -- [ عند إيقاف الـ Toggle: حذف الزر العائم وإيقاف العمليات ]
+            print("تم إيقاف ميزة فلنق الشريف")
+            
+            if playerGui:FindFirstChild("FlingSheriffButtonGui") then
+                playerGui.FlingSheriffButtonGui:Destroy()
+            end
+        end
+    end
+})
+
+-- =======================================================
+-- ميزة تعديل سرعة اللاعب (سلايدر + زر تفعيل Toggle)
+-- =======================================================
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- متغيرات السرعة والحالة
+local selectedWalkSpeed = 16 -- القيمة الافتراضية للسرعة
+local isSpeedEnabled = false
+
+-- 1. سلايدر لاختيار الرقم (من 1 إلى 1000)
+MainSection:Slider({
+    Title = "speed slider",
+    Min = 1,
+    Max = 1000,
+    Default = 16,
+    Increment = 1,
+    Callback = function(value)
+        selectedWalkSpeed = value
+        
+        -- إذا كان زر التفعيل (Toggle) شغَالاً، قم بتطبيق السرعة فوراً عند تحريك السلايدر
+        if isSpeedEnabled then
+            local character = LocalPlayer.Character
+            if character then
+                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid.WalkSpeed = selectedWalkSpeed
+                end
+            end
+        end
+    end
+})
+
+-- 2. زر تشغيل (Toggle) لتفعيل أو إيقاف السرعة المحددة
+MainSection:Toggle({
+    Title = "speed palyer",
+    Value = false,
+    Callback = function(Value)
+        isSpeedEnabled = Value
+        
+        local character = LocalPlayer.Character
+        if character then
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                if isSpeedEnabled then
+                    humanoid.WalkSpeed = selectedWalkSpeed
+                else
+                    humanoid.WalkSpeed = 16 -- العودة للسرعة الافتراضية عند الإغلاق
+                end
+            end
+        end
+    end
+})
+
+-- دالة للحفاظ على السرعة مفعلة حتى لو مات اللاعب (Respawn)
+LocalPlayer.CharacterAdded:Connect(function(character)
+    local humanoid = character:WaitForChild("Humanoid")
+    
+    if isSpeedEnabled then
+        humanoid.WalkSpeed = selectedWalkSpeed
+    end
+    
+    -- مراقبة أي محاولة من اللعبة لتغيير السرعة وإبقائها على الرقم المختار
+    humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+        if isSpeedEnabled and humanoid.WalkSpeed ~= selectedWalkSpeed then
+            humanoid.WalkSpeed = selectedWalkSpeed
+        end
+    end)
+end)
+
+-- تطبيق الحماية على الشخصية الحالية إن وجدت
+if LocalPlayer.Character then
+    local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+            if isSpeedEnabled and humanoid.WalkSpeed ~= selectedWalkSpeed then
+                humanoid.WalkSpeed = selectedWalkSpeed
+            end
+        end)
+    end
+end
+
+-- =======================================================
+-- ميزة الجدارن المخترقة (Noclip) مع زر تشغيل (Toggle)
+-- =======================================================
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local noclipConnection = nil
+
+MainSection:Toggle({
+    Title = " (Noclip)",
+    Value = false,
+    Callback = function(Value)
+        if Value then
+            -- تفعيل النوكليب
+            noclipConnection = RunService.Stepped:Connect(function()
+                local character = LocalPlayer.Character
+                if character then
+                    for _, part in ipairs(character:GetDescendants()) do
+                        if part:IsA("BasePart") and part.CanCollide then
+                            part.CanCollide = false
+                        end
+                    end
+                end
+            end)
+        else
+            -- إيقاف النوكليب وإرجاع الاصطدام لطبيعته
+            if noclipConnection then
+                noclipConnection:Disconnect()
+                noclipConnection = nil
+            end
+            
+            local character = LocalPlayer.Character
+            if character then
+                for _, part in ipairs(character:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        -- ملاحظة: الأجزاء الأساسية مثل HumanoidRootPart عادة تكون CanCollide بـ true أو false حسب اللعبة
+                        -- لكن الأفضل إرجاعها للطبيعي أو ترك اللعبة تديرها عند الموت والريسباون
+                    end
+                end
+            end
+        end
+    end
+})
+
+-- =======================================================
+-- ميزة الإخفاء (Invisible) مع زر تشغيل (Toggle)
+-- =======================================================
+local player = game.Players.LocalPlayer
+local runService = game:GetService("RunService")
+
+-- المتغيرات الأساسية
+local invisible = false
+local character, humanoid, rootPart
+local parts = {}
+local invisConnection = nil
+
+-- دالة تجهيز شخصيتك وجلب أجزاء جسمك
+local function setupCharacter()
+    character = player.Character or player.CharacterAdded:Wait()
+    humanoid = character:WaitForChild("Humanoid")
+    rootPart = character:WaitForChild("HumanoidRootPart")
+    parts = {}
+    for _, obj in pairs(character:GetDescendants()) do
+        if obj:IsA("BasePart") and obj.Transparency == 0 then
+            table.insert(parts, obj)
+        end
+    end
+end
+
+setupCharacter()
+
+-- تحديث الشخصية لو صار رسبون
+player.CharacterAdded:Connect(function()
+    invisible = false
+    if invisConnection then
+        invisConnection:Disconnect()
+        invisConnection = nil
+    end
+    task.wait(0.5)
+    setupCharacter()
+end)
+
+-- إضافة ميزة الإخفاء داخل زر التبديل (Toggle)
+MainSection:Toggle({
+    Title = "(Invisible)",
+    Value = false,
+    Callback = function(Value)
+        invisible = Value
+        
+        if invisible then
+            -- 1. تفعيل الشفافية الخفيفة عشان تشوف نفسك والباقين ما يشوفونك
+            for _, part in pairs(parts) do
+                if part and part.Parent then
+                    part.Transparency = 0.3
+                end
+            end
+            
+            -- 2. تشغيل قلب الإخفاء الخارق (Heartbeat) عشان تطير عن عيون السيرفر واللاعبين
+            invisConnection = runService.Heartbeat:Connect(function()
+                if invisible and rootPart and humanoid and rootPart.Parent then
+                    local cf = rootPart.CFrame
+                    local camOffset = humanoid.CameraOffset
+                    
+                    -- نقل الشخصية لمكان بعيد تحت الأرض في كل جزء من الثانية
+                    local hidden = cf * CFrame.new(0, -200000, 0)
+                    rootPart.CFrame = hidden
+                    humanoid.CameraOffset = hidden:ToObjectSpace(CFrame.new(cf.Position)).Position
+                    
+                    runService.RenderStepped:Wait()
+                    
+                    -- إرجاع الموضع والكاميرا للحركة السلسة
+                    if rootPart and rootPart.Parent then
+                        rootPart.CFrame = cf
+                        humanoid.CameraOffset = camOffset
+                    end
+                end
+            end)
+            
+            print("Invisible: ON")
+        else
+            -- إيقاف الإخفاء وإرجاع كل شي طبيعي
+            if invisConnection then
+                invisConnection:Disconnect()
+                invisConnection = nil
+            end
+            
+            for _, part in pairs(parts) do
+                if part and part.Parent then
+                    part.Transparency = 0
+                end
+            end
+            
+            print("Invisible: OFF")
+        end
+    end
+})
+
+-- =======================================================
+-- ميزة تعديل قوة القفز (سلايدر + زر تفعيل Toggle)
+-- =======================================================
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- متغيرات القفز والحالة
+local selectedJumpPower = 50 -- القيمة الافتراضية لقوة القفز
+local isJumpPowerEnabled = false
+
+-- التأكد من أن اللعبة تستخدم JumpPower وليس JumpHeight
+local function ensureJumpPowerType(humanoid)
+    if humanoid then
+        pcall(function()
+            humanoid.UseJumpPower = true
+        end)
+    end
+end
+
+-- 1. سلايدر لاختيار قوة القفز (من 1 إلى 1000)
+MainSection:Slider({
+    Title = " (JumpPower)",
+    Min = 1,
+    Max = 1000,
+    Default = 50,
+    Increment = 1,
+    Callback = function(value)
+        selectedJumpPower = value
+        
+        -- إذا كان زر التفعيل (Toggle) شغَالاً، قم بتطبيق القوة فوراً عند تحريك السلايدر
+        if isJumpPowerEnabled then
+            local character = LocalPlayer.Character
+            if character then
+                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    ensureJumpPowerType(humanoid)
+                    humanoid.JumpPower = selectedJumpPower
+                end
+            end
+        end
+    end
+})
+
+-- 2. زر تشغيل (Toggle) لتفعيل أو إيقاف قوة القفز المحددة
+MainSection:Toggle({
+    Title = "JumpPower",
+    Value = false,
+    Callback = function(Value)
+        isJumpPowerEnabled = Value
+        
+        local character = LocalPlayer.Character
+        if character then
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                ensureJumpPowerType(humanoid)
+                if isJumpPowerEnabled then
+                    humanoid.JumpPower = selectedJumpPower
+                else
+                    humanoid.JumpPower = 50 -- العودة للقوة الافتراضية عند الإغلاق
+                end
+            end
+        end
+    end
+})
+
+-- دالة للحفاظ على القفز مفعلة حتى لو مات اللاعب (Respawn)
+LocalPlayer.CharacterAdded:Connect(function(character)
+    local humanoid = character:WaitForChild("Humanoid")
+    ensureJumpPowerType(humanoid)
+    
+    if isJumpPowerEnabled then
+        humanoid.JumpPower = selectedJumpPower
+    end
+    
+    -- مراقبة أي محاولة من اللعبة لتغيير قوة القفز وإبقائها على الرقم المختار
+    humanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
+        if isJumpPowerEnabled and humanoid.JumpPower ~= selectedJumpPower then
+            humanoid.JumpPower = selectedJumpPower
+        end
+    end)
+end)
+
+-- تطبيق الحماية على الشخصية الحالية إن وجدت
+if LocalPlayer.Character then
+    local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        ensureJumpPowerType(humanoid)
+        humanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
+            if isJumpPowerEnabled and humanoid.JumpPower ~= selectedJumpPower then
+                humanoid.JumpPower = selectedJumpPower
+            end
+        end)
+    end
+end
+
+-- =======================================================
+-- حماية مطلقة ضد الفلنق (Anti-Fling & Anti-Push)
+-- =======================================================
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+local antiFlingConnection = nil
+local antiCollideConnection = nil
+
+MainSection:Toggle({
+    Title = "anti fling",
+    Value = false,
+    Callback = function(Value)
+        if Value then
+            -- 1. تفعيل حماية الاصطدام مع اللاعبين الآخرين (لمنع أي شخص من دفعك أو لمسك)
+            antiCollideConnection = RunService.Stepped:Connect(function()
+                local character = LocalPlayer.Character
+                if character then
+                    for _, part in ipairs(character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            -- منع أي جزء في جسمك من الاصطدام بأي لاعب آخر
+                            part.CanCollide = true -- تبقى قادراً على الوقوف على الأرض والجدران
+                            
+                            -- تعطيل التلامس الفيزيائي مع اللاعبين الآخرين فقط
+                            for _, player in ipairs(Players:GetPlayers()) do
+                                if player ~= LocalPlayer and player.Character then
+                                    for _, pPart in ipairs(player.Character:GetDescendants()) do
+                                        if pPart:IsA("BasePart") then
+                                            pcall(function()
+                                                local constraint = part:FindFirstChild("NoCollisionConstraint")
+                                                -- إيقاف الاصطدام المباشر تلقائياً
+                                                part.CustomPhysicalProperties = PhysicalProperties.new(0.01, 0, 0, 0, 0)
+                                            end)
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+
+            -- 2. حماية الفلنق الخارقة (تثبيت السرعة والقضاء على أي قوة دفع وهمية)
+            antiFlingConnection = RunService.Heartbeat:Connect(function()
+                local character = LocalPlayer.Character
+                if character then
+                    local rootPart = character:FindFirstChild("HumanoidRootPart")
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    
+                    if rootPart and humanoid then
+                        -- إيقاف أي سرعة دوران مجنونة أو سرعة دفع خيالية (حتى لو مليار)
+                        if rootPart.Velocity.Magnitude > 100 or rootPart.RotVelocity.Magnitude > 100 then
+                            rootPart.Velocity = Vector3.new(0, 0, 0)
+                            rootPart.RotVelocity = Vector3.new(0, 0, 0)
+                        end
+                        
+                        -- إلغاء أي قوى دفع خارجية (BodyForces / BodyVelocity) قد يزرعها شخص فيك
+                        for _, child in ipairs(rootPart:GetChildren()) do
+                            if child:IsA("BodyVelocity") or child:IsA("BodyForce") or child:IsA("BodyThrust") or child:IsA("RocketPropulsion") or child:IsA("LinearVelocity") or child:IsA("VectorForce") then
+                                child:Destroy()
+                            end
+                        end
+                    end
+                end
+            end)
+            
+            print("Anti-Fling & Push: ON")
+        else
+            -- إيقاف الحماية وإرجاع الأمور لطبيعتها
+            if antiCollideConnection then
+                antiCollideConnection:Disconnect()
+                antiCollideConnection = nil
+            end
+            
+            if antiFlingConnection then
+                antiFlingConnection:Disconnect()
+                antiFlingConnection = nil
+            end
+            
+            print("Anti-Fling & Push: OFF")
+        end
+    end
+})
+
+-- =======================================================
+-- ميزة كشف الأدوار والـ ESP (Murderer / Sheriff / Innocent)
+-- =======================================================
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer = Players.LocalPlayer
+
+local ParentContainer = (gethui and gethui()) or CoreGui or LocalPlayer:WaitForChild("PlayerGui")
+
+local ESPData = {
+    Highlights = {},
+    Connection = nil,
+    PlayerEvents = {}
+}
+
+local RoleColors = {
+    Murderer = Color3.fromRGB(255, 0, 0),    -- أحمر قوي
+    Sheriff  = Color3.fromRGB(0, 120, 255),   -- أزرق قوي
+    Innocent = Color3.fromRGB(0, 255, 80)    -- أخضر قوي
+}
+
+local function removePlayerESP(player)
+    if ESPData.Highlights[player] then
+        ESPData.Highlights[player]:Destroy()
+        ESPData.Highlights[player] = nil
+    end
+end
+
+local function getRole(player)
+    if not player then return "Innocent" end
+
+    local serverRoleObj = player:FindFirstChild("ServerRole") or (player.Character and player.Character:FindFirstChild("ServerRole"))
+    if serverRoleObj and serverRoleObj:IsA("ValueBase") then
+        local val = tostring(serverRoleObj.Value)
+        if RoleColors[val] then return val end
+    end
+
+    local attrRole = player:GetAttribute("ServerRole")
+    if attrRole and RoleColors[tostring(attrRole)] then
+        return tostring(attrRole)
+    end
+
+    local getPlayerData = ReplicatedStorage:FindFirstChild("GetPlayerData", true)
+    if getPlayerData and getPlayerData:IsA("RemoteFunction") then
+        local success, data = pcall(function() return getPlayerData:InvokeServer() end)
+        if success and type(data) == "table" and data[player.Name] then
+            local role = data[player.Name].Role
+            if role == "Hero" then return "Sheriff" end
+            if RoleColors[role] then return role end
+        end
+    end
+
+    return "Innocent"
+end
+
+local function updateESP(player)
+    if player == LocalPlayer then return end
+
+    local char = player.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+
+    if not char or not hrp or not hum or hum.Health <= 0 then
+        removePlayerESP(player)
+        return
+    end
+
+    local role = getRole(player)
+    local color = RoleColors[role] or RoleColors.Innocent
+
+    local highlight = ESPData.Highlights[player]
+
+    if not highlight or highlight.Parent ~= ParentContainer then
+        removePlayerESP(player)
+        
+        highlight = Instance.new("Highlight")
+        highlight.Name = "ESP_" .. player.Name
+        highlight.FillTransparency = 0 
+        highlight.OutlineTransparency = 0 
+        highlight.OutlineColor = Color3.fromRGB(255, 255, 255) 
+        highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        highlight.Parent = ParentContainer
+        ESPData.Highlights[player] = highlight
+    end
+
+    highlight.Adornee = char
+    highlight.FillColor = color
+end
+
+local function updateAllESP()
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer then
+            updateESP(p)
+        end
+    end
+end
+
+local function listenToPlayer(player)
+    if player == LocalPlayer then return end
+
+    local function setupCharacter(char)
+        removePlayerESP(player)
+        
+        local hum = char:WaitForChild("Humanoid", 5)
+        if hum then
+            hum.Died:Connect(function()
+                removePlayerESP(player)
+            end)
+        end
+
+        updateESP(player)
+    end
+
+    if player.Character then setupCharacter(player.Character) end
+    
+    local conn1 = player.CharacterAdded:Connect(setupCharacter)
+    local conn2 = player.ChildAdded:Connect(function(child)
+        if child.Name == "ServerRole" then
+            if child:IsA("ValueBase") then
+                child.Changed:Connect(function() updateESP(player) end)
+            end
+            updateESP(player)
+        end
+    end)
+    
+    local conn3 = player.AncestryChanged:Connect(function()
+        if not player:IsDescendantOf(game) then
+            removePlayerESP(player)
+        end
+    end)
+
+    ESPData.PlayerEvents[player] = {conn1, conn2, conn3}
+end
+
+-- ربط الميزة بـ زر التبديل (Toggle)
+espSection:Toggle({
+    Title = "(Role ESP)",
+    Value = false,
+    Callback = function(Value)
+        if Value then
+            -- تفعيل الكشف
+            for _, player in ipairs(Players:GetPlayers()) do
+                listenToPlayer(player)
+            end
+
+            Players.PlayerAdded:Connect(listenToPlayer)
+            Players.PlayerRemoving:Connect(function(player)
+                removePlayerESP(player)
+                if ESPData.PlayerEvents[player] then
+                    for _, conn in ipairs(ESPData.PlayerEvents[player]) do
+                        conn:Disconnect()
+                    end
+                    ESPData.PlayerEvents[player] = nil
+                end
+            end)
+
+            -- حلقة التحديث المستمرة
+            ESPData.Connection = task.spawn(function()
+                while task.wait(0.1) do
+                    updateAllESP()
+                end
+            end)
+            
+            print("Role ESP: ON")
+        else
+            -- إيقاف الكشف وحذف جميع الـ Highlights الموجودة
+            if ESPData.Connection then
+                task.cancel(ESPData.Connection)
+                ESPData.Connection = nil
+            end
+
+            for player, _ in pairs(ESPData.Highlights) do
+                removePlayerESP(player)
+            end
+
+            print("Role ESP: OFF")
+        end
+    end
+})
+
+-- =======================================================
+-- ميزة كشف الأسماء فقط (Name ESP) مع زر تشغيل (Toggle)
+-- =======================================================
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local LocalPlayer = Players.LocalPlayer
+
+local ParentContainer = (gethui and gethui()) or CoreGui or LocalPlayer:WaitForChild("PlayerGui")
+
+local ESPData = {
+    Billboards = {},
+    Connection = nil,
+    PlayerEvents = {}
+}
+
+local function removePlayerESP(player)
+    if ESPData.Billboards[player] then
+        ESPData.Billboards[player]:Destroy()
+        ESPData.Billboards[player] = nil
+    end
+end
+
+local function updateESP(player)
+    if player == LocalPlayer then return end
+
+    local char = player.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    local head = char and char:FindFirstChild("Head")
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+
+    if not char or not hrp or not head or not hum or hum.Health <= 0 then
+        removePlayerESP(player)
+        return
+    end
+
+    -- تحديث لوحة الاسم (BillboardGui) فوق رأس اللاعب
+    local billboard = ESPData.Billboards[player]
+    local textLabel
+    if not billboard or billboard.Parent ~= ParentContainer then
+        if billboard then billboard:Destroy() end
+
+        billboard = Instance.new("BillboardGui")
+        billboard.Name = "ESP_Name_" .. player.Name
+        billboard.Size = UDim2.new(0, 200, 0, 50)
+        billboard.StudsOffset = Vector3.new(0, 2.5, 0)
+        billboard.AlwaysOnTop = true
+        billboard.Parent = ParentContainer
+
+        textLabel = Instance.new("TextLabel")
+        textLabel.Name = "NameText"
+        textLabel.Size = UDim2.new(1, 0, 1, 0)
+        textLabel.BackgroundTransparency = 1
+        textLabel.TextScaled = false
+        textLabel.TextSize = 14
+        textLabel.Font = Enum.Font.GothamBold
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- لون أبيض صافي
+        textLabel.TextStrokeTransparency = 0 -- حدود سوداء واضحة للنص
+        textLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+        textLabel.Parent = billboard
+
+        ESPData.Billboards[player] = billboard
+    else
+        textLabel = billboard:FindFirstChild("NameText")
+    end
+
+    billboard.Adornee = head
+    if textLabel then
+        textLabel.Text = player.Name
+    end
+end
+
+local function updateAllESP()
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer then
+            updateESP(p)
+        end
+    end
+end
+
+local function listenToPlayer(player)
+    if player == LocalPlayer then return end
+
+    local function setupCharacter(char)
+        removePlayerESP(player)
+        
+        local hum = char:WaitForChild("Humanoid", 5)
+        if hum then
+            hum.Died:Connect(function()
+                removePlayerESP(player)
+            end)
+        end
+
+        updateESP(player)
+    end
+
+    if player.Character then setupCharacter(player.Character) end
+    
+    local conn1 = player.CharacterAdded:Connect(setupCharacter)
+    local conn3 = player.AncestryChanged:Connect(function()
+        if not player:IsDescendantOf(game) then
+            removePlayerESP(player)
+        end
+    end)
+
+    ESPData.PlayerEvents[player] = {conn1, conn3}
+end
+
+-- ربط الميزة بـ زر التبديل (Toggle)
+espSection:Toggle({
+    Title = " (Name ESP)",
+    Value = false,
+    Callback = function(Value)
+        if Value then
+            -- تفعيل الكشف
+            for _, player in ipairs(Players:GetPlayers()) do
+                listenToPlayer(player)
+            end
+
+            Players.PlayerAdded:Connect(listenToPlayer)
+            Players.PlayerRemoving:Connect(function(player)
+                removePlayerESP(player)
+                if ESPData.PlayerEvents[player] then
+                    for _, conn in ipairs(ESPData.PlayerEvents[player]) do
+                        conn:Disconnect()
+                    end
+                    ESPData.PlayerEvents[player] = nil
+                end
+            end)
+
+            -- حلقة التحديث المستمرة
+            ESPData.Connection = task.spawn(function()
+                while task.wait(0.1) do
+                    updateAllESP()
+                end
+            end)
+            
+            print("Name ESP: ON")
+        else
+            -- إيقاف الكشف وحذف جميع الـ Billboards
+            if ESPData.Connection then
+                task.cancel(ESPData.Connection)
+                ESPData.Connection = nil
+            end
+
+            for player, _ in pairs(ESPData.Billboards) do
+                removePlayerESP(player)
+            end
+
+            print("Name ESP: OFF")
+        end
+    end
+})
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+
+local isCoinFarmActive = false
+local farmConnection = nil
+local maxCoins = 40
+local farmSpeed = 200 -- القيمة الافتراضية للسرعة (يمكن تعديلها بالسايدر)
+
+-- وظيفة التحقق من وجود القاتل على قيد الحياة بحوزته السكين
+local function IsMurdererAlive()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+            local backpack = player:FindFirstChild("Backpack")
+            local char = player.Character
+            
+            if humanoid and humanoid.Health > 0 then
+                local hasKnife = (backpack and (backpack:FindFirstChild("Knife") or backpack:FindFirstChild("KnifeServer"))) 
+                    or (char and (char:FindFirstChild("Knife") or char:FindFirstChild("KnifeServer")))
+                
+                if hasKnife then
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
+
+-- وظيفة زر الفارم
+local function ToggleCoinFarm(State)
+    isCoinFarmActive = State
+    
+    if isCoinFarmActive then
+        local ignoredCoins = {}
+        local collectedCount = 0
+        
+        farmConnection = task.spawn(function()
+            while isCoinFarmActive do
+                -- 1. التحقق من القاتل
+                if not IsMurdererAlive() then
+                    isCoinFarmActive = false
+                    break
+                end
+                
+                -- 2. التحقق من الوصول للحد الأقصى (40 كوينز)
+                if collectedCount >= maxCoins then
+                    isCoinFarmActive = false
+                    break
+                end
+                
+                local character = LocalPlayer.Character
+                local root = character and character:FindFirstChild("HumanoidRootPart")
+                
+                if root then
+                    -- البحث عن أقرب كوين
+                    local closestCoin = nil
+                    local minDistance = math.huge
+                    
+                    for _, obj in pairs(Workspace:GetDescendants()) do
+                        if obj:IsA("BasePart") and (obj.Name == "CoinVisual" or obj.Name == "Coin_server" or obj.Name == "Coin") then
+                            if not ignoredCoins[obj] and obj.Parent then
+                                local dist = (obj.Position - root.Position).Magnitude
+                                if dist < minDistance then
+                                    minDistance = dist
+                                    closestCoin = obj
+                                end
+                            end
+                        end
+                    end
+                    
+                    if closestCoin then
+                        -- الانتقال لنفس موقع الكوينز المباشر مع السرعة المحددة عبر السلايدر
+                        local targetCFrame = CFrame.new(closestCoin.Position)
+                        local distance = (targetCFrame.Position - root.Position).Magnitude
+                        local duration = distance / math.max(farmSpeed, 1)
+                        
+                        local tween = TweenService:Create(root, TweenInfo.new(duration, Enum.EasingStyle.Linear), {CFrame = targetCFrame})
+                        tween:Play()
+                        
+                        -- الانتظار لحين الوصول أو تغير حالة الجولة
+                        repeat 
+                            task.wait() 
+                        until not isCoinFarmActive or not IsMurdererAlive() or not closestCoin or not closestCoin.Parent or (root.Position - targetCFrame.Position).Magnitude < 1.5
+                        
+                        if closestCoin and isCoinFarmActive and IsMurdererAlive() then
+                            if firetouchinterest then
+                                pcall(function()
+                                    firetouchinterest(root, closestCoin, 0)
+                                    firetouchinterest(root, closestCoin, 1)
+                                end)
+                            end
+                            collectedCount = collectedCount + 1
+                            ignoredCoins[closestCoin] = true
+                            task.wait(0.5)
+                        end
+                    else
+                        table.clear(ignoredCoins)
+                        task.wait(0.1)
+                    end
+                else
+                    task.wait(0.5)
+                end
+            end
+        end)
+    else
+        if farmConnection then
+            task.cancel(farmConnection)
+            farmConnection = nil
+        end
+    end
+end
+
+-- =======================================================
+-- عناصر الواجهة (زر التشغيل + سلايدر السرعة)
+-- =======================================================
+
+-- 1. زر تفعيل الفارم
+autofarmSection:Toggle({
+    Title = "(Coin Farm)",
+    Value = false,
+    Callback = function(State)
+        ToggleCoinFarm(State)
+    end
+})
+
+-- 2. سلايدر التحكم في السرعة (من 1 إلى 200)
+autofarmSection:Slider({
+    Title = "farm speed",
+    Min = 1,
+    Max = 200,
+    Default = 200,
+    Increment = 1,
+    Callback = function(Value)
+        farmSpeed = Value -- تحديث متغير السرعة ديناميكياً عند تحريك السلايدر
+    end
+})
